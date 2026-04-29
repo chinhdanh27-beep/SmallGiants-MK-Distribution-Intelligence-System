@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MK Distribution Intelligence System</title>
+  <style>
+    :root {
+      --red: #c9182b;
+      --dark-red: #9f1020;
+      --soft-red: #ffe3e6;
+      --light-red: #fff5f6;
+      --green: #168754;
+      --soft-green: #e7f7ef;
+      --amber: #f59f00;
+      --soft-amber: #fff3cd;
+      --blue: #2563eb;
+      --soft-blue: #e8f0ff;
+      --gray: #f5f6f8;
+      --text: #202124;
+      --muted: #666;
+      --border: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f7f7;
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--dark-red), var(--red));
+      color: white;
+      padding: 28px 40px;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.92;
+      font-size: 15px;
+    }
+
+    main {
+      max-width: 1360px;
+      margin: 24px auto 48px;
+      padding: 0 20px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    button {
+      border: 0;
+      background: var(--red);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 9px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--red);
+      border: 1px solid var(--red);
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #e9ecef;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .pill.active {
+      background: var(--soft-red);
+      color: var(--red);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--red);
+      border-radius: 10px;
+      padding: 13px 10px;
+      text-align: center;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--red);
+      color: white;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 18px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .card h2, .card h3 {
+      margin: 0 0 12px;
+      color: var(--red);
+    }
+
+    .card h2 { font-size: 22px; }
+    .card h3 { font-size: 17px; }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin: -4px 0 14px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .metric {
+      font-size: 34px;
+      font-weight: 900;
+      margin: 4px 0;
+    }
+
+    .muted { color: var(--muted); font-size: 13px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 10px 0 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: var(--red);
+      color: white;
+      font-weight: 900;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .red { background: var(--soft-red); color: var(--red); }
+    .green { background: var(--soft-green); color: var(--green); }
+    .amber { background: var(--soft-amber); color: #8a5a00; }
+    .blue { background: var(--soft-blue); color: var(--blue); }
+
+    .rule-card {
+      background: var(--light-red);
+      border-left: 5px solid var(--red);
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 11px;
+      line-height: 1.45;
+    }
+
+    .rule-card strong { color: var(--red); }
+
+    .alert {
+      border-radius: 10px;
+      padding: 11px 13px;
+      margin-bottom: 9px;
+      font-weight: 800;
+    }
+
+    .alert.red-alert {
+      background: var(--soft-red);
+      color: var(--dark-red);
+      border: 1px solid #f0b7bd;
+    }
+
+    .alert.yellow-alert {
+      background: var(--soft-amber);
+      color: #8a5a00;
+      border: 1px solid #f6d365;
+    }
+
+    .formula {
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      padding: 14px;
+      font-family: Consolas, monospace;
+      overflow-x: auto;
+    }
+
+    .note {
+      background: #fff8e1;
+      border-left: 5px solid var(--amber);
+      padding: 13px;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+
+    .small-list {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    ul { margin-top: 7px; padding-left: 19px; }
+    li { margin-bottom: 5px; }
+
+    @media (max-width: 900px) {
+      .tabs, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      header { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MK Distribution Intelligence System</h1>
+    <p>Part C prototype aligned with decision logic, disruption scenario, dashboard, and AI value statement</p>
+  </header>
+
+  <main>
+    <div class="controls">
+      <button id="applyScenario">Apply Port Congestion Scenario</button>
+      <button id="resetScenario" class="secondary">Reset Baseline</button>
+      <span id="scenarioStatus" class="pill">Baseline mode</span>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="decision">1. Decision Logic</div>
+      <div class="tab" data-tab="scenario">2. Disruption Scenario</div>
+      <div class="tab" data-tab="dashboard">3. Monitoring Dashboard</div>
+      <div class="tab" data-tab="ai">4. AI Value Statement</div>
+    </div>
+
+    <section id="decision" class="tab-content active">
+      <div class="card">
+        <h2>Component 1: Decision Logic</h2>
+        <p class="subtitle">Rules use case inputs: lead time increase, airfreight rate, cost spike, DC safety buffer, and distributor SLA threshold.</p>
+
+        <div class="rule-card"><strong>Rule 1 - Shipment Delay Trigger, less than one week</strong><br>IF lead time increase due to congestion is more than 1 day and up to 7 days, THEN trigger a yellow alert. If buffer stock is sufficient, use buffer stock to cover demand during delay. If buffer stock is insufficient, alert the company to renegotiate with customers and evaluate alternatives within 24 hours.</div>
+
+        <div class="rule-card"><strong>Rule 2 - Shipment Delay Trigger, more than one week</strong><br>IF lead time increase due to congestion is more than 7 days, THEN flag affected shipments in red, alert the company to renegotiate with customers and evaluate alternatives within 24 hours.</div>
+
+        <div class="rule-card"><strong>Rule 3 - Trade-off Table Trigger</strong><br>IF lead time increase due to congestion is more than 1 day, THEN establish a trade-off table comparing sea, air, and split shipment by cost, lead time, and risk to serve for the evaluation and choice of alternatives.</div>
+
+        <div class="rule-card"><strong>Rule 4 - DC Safety Buffer Breach Trigger</strong><br>IF projected DC stock level falls below 1 week of average demand, THEN flag the DC as under-stocked in red and recommend either emergency replenishment from an alternative DC or early release from existing DC stock, based on cost effectiveness.</div>
+
+        <div class="rule-card"><strong>Rule 5 - Distributor SLA Breach Trigger</strong><br>IF distributor fulfillment rate falls below 95% in any rolling 4-week window, THEN flag the distributor as red, diagnose root cause, and recommend corrective actions such as expedited inbound shipment, inventory reallocation, or priority DC handling.</div>
+      </div>
+
+      <div class="card">
+        <h3>Decision Table</h3>
+        <table id="decisionTable"></table>
+      </div>
+
+      <div class="card">
+        <h3>Triggered Alerts</h3>
+        <div id="alertList"></div>
+      </div>
+    </section>
+
+    <section id="scenario" class="tab-content">
+      <div class="card">
+        <h2>Component 2: Disruption Scenario</h2>
+        <p class="subtitle">Port congestion adds +15 days ocean lead time to DC-US-E and DC-UK, while ocean freight cost increases by 20%.</p>
+        <div class="grid-3">
+          <div class="card"><h3>LT Increase</h3><div class="metric">+15d</div><div class="muted">Affected DCs: DC-US-E, DC-UK</div></div>
+          <div class="card"><h3>Ocean Cost Spike</h3><div class="metric">+20%</div><div class="muted">Applied to FCL and LCL ocean rates</div></div>
+          <div class="card"><h3>Airfreight Rate</h3><div class="metric">$4.50</div><div class="muted">per kg, Product A = 1.2 kg/unit</div></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Before Disruption</h3>
+          <table id="beforeTable"></table>
+        </div>
+        <div class="card">
+          <h3>After Disruption</h3>
+          <table id="afterTable"></table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Cost Trade-off Table by At-risk Order</h3>
+        <p class="subtitle">This table is generated by Rule 3 whenever lead time increases by more than 1 day.</p>
+        <table id="tradeoffTable"></table>
+        </div>
+    </section>
+
+    <section id="dashboard" class="tab-content">
+      <div class="card">
+        <h2>Component 3: Monitoring Dashboard</h2>
+        <p class="subtitle"><strong>KPI thresholds:</strong> DC Stock vs Safety Buffer &lt; 1.00 = RED | Fulfillment Rate &lt; 95% = RED | Shipment Delay Days &gt; 14 = RED</p>
+        <div class="grid-3">
+          <div class="card"><h3>KPI 1: DC Stock vs Safety Buffer</h3><div class="metric" id="stockBreachCount">0</div><div class="muted">DCs below 1 week average demand</div></div>
+          <div class="card"><h3>KPI 2: Distributor Fulfillment Rate</h3><div class="metric" id="slaBreachCount">0</div><div class="muted">Distributors below 95%</div></div>
+          <div class="card"><h3>KPI 3: Shipment Delay Days</h3><div class="metric" id="delayBreachCount">0</div><div class="muted">Shipments delayed over 14 days</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Live KPI Status</h3>
+        <table id="dashboardTable"></table>
+      </div>
+
+      <div class="card">
+        <h3>Alerts Log</h3>
+        <table id="alertsTable"></table>
+      </div>
+    </section>
+
+    <section id="ai" class="tab-content">
+      <div class="card">
+        <h2>Component 4: AI Value Statement</h2>
+        <h3>Where AI adds the most value</h3>
+        <p>AI adds the greatest value in <strong>predictive disruption detection</strong>. The current rule-based DIS reacts once a delay is recorded, while AI can detect early signals before port congestion is confirmed.</p>
+
+        <h3>Data AI would need</h3>
+        <ul>
+          <li>Real-time AIS vessel tracking for MK-contracted vessels</li>
+          <li>Historical port congestion records at destination ports</li>
+          <li>Weekly DC stock level and demand data</li>
+          <li>Daily distributor fulfillment logs</li>
+          <li>Freight rate and airfreight capacity data</li>
+        </ul>
+
+        <h3>Business outcome improved</h3>
+        <p>Earlier disruption detection gives MK more time to book airfreight, protect critical Product A orders, reduce emergency logistics premiums, and maintain the 98% customer fulfillment target.</p>
+        <div class="formula">AI outcome: earlier detection -> better mode decision -> lower stockout risk -> protected revenue</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let disrupted = false;
+
+    const LT_DELAY = 15;
+    const AIR_RATE = 4.5;
+    const PRODUCT_A_WEIGHT = 1.2;
+    const OCEAN_SPIKE = 0.2;
+    const AIR_LT = 5;
+    const SPLIT_AIR_SHARE = 0.30;
+
+    const standardLT = {
+      "DC-US-E": 50,
+      "DC-US-W": 50,
+      "DC-UK": 40,
+      "DC-AU": 25
+    };
+
+    const atRiskOrders = [
+      { order: "US-A-May15", dc: "DC-US-E", market: "US", product: "A", qty: 20000, due: "2026-05-15", etd: "2026-03-20", originalOcean: 5200, avgSpend: 70 },
+      { order: "UK-A-Jun12", dc: "DC-UK", market: "UK", product: "A", qty: 13773, due: "2026-06-12", etd: "2026-04-18", originalOcean: 2410.1, avgSpend: 45 }
+    ];
+
+    const monitorBaseline = [
+      { dc: "DC-US-E", distributor: "PlayGiant USA", stock: 21000, demand: 18000, fulfillment: 0.978, delay: 0 },
+      { dc: "DC-UK", distributor: "BrightToy UK", stock: 12000, demand: 10000, fulfillment: 0.982, delay: 0 },
+      { dc: "DC-US-W", distributor: "PlayGiant USA", stock: 22000, demand: 16000, fulfillment: 0.978, delay: 0 },
+      { dc: "DC-AU", distributor: "DownUnder Toys", stock: 3000, demand: 2500, fulfillment: 0.968, delay: 0 }
+    ];
+
+    const monitorDisrupted = [
+      { dc: "DC-US-E", distributor: "PlayGiant USA", stock: 15000, demand: 18000, fulfillment: 0.928, delay: 15 },
+      { dc: "DC-UK", distributor: "BrightToy UK", stock: 9000, demand: 10000, fulfillment: 0.910, delay: 15 },
+      { dc: "DC-US-W", distributor: "PlayGiant USA", stock: 22000, demand: 16000, fulfillment: 0.978, delay: 0 },
+      { dc: "DC-AU", distributor: "DownUnder Toys", stock: 3000, demand: 2500, fulfillment: 0.968, delay: 0 }
+    ];
+
+    function addDays(dateStr, days) {
+      const d = new Date(dateStr + "T00:00:00");
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+
+    function fmtDate(d) {
+      return d.toISOString().slice(0, 10);
+    }
+
+    function gap(arrival, due) {
+      return Math.round((arrival - new Date(due + "T00:00:00")) / 86400000);
+    }
+
+    function money(v) {
+      return "$" + Math.round(v).toLocaleString();
+    }
+
+    function airCost(qty, share = 1) {
+      return qty * share * PRODUCT_A_WEIGHT * AIR_RATE;
+    }
+
+    function evaluateOrders(isDisrupted) {
+      return atRiskOrders.map(o => {
+        const standardLtDays = standardLT[o.dc];
+        
+        const dueObj = new Date(o.due + "T00:00:00");
+        const etdObj = new Date(dueObj);
+        etdObj.setDate(etdObj.getDate() - standardLtDays);
+        
+        let row = {
+          Order: o.order,
+          DC: o.dc,
+          Units: o.qty.toLocaleString(),
+          ETD: fmtDate(etdObj),
+          "Standard LT": standardLtDays + "d",
+        };
+
+        if (isDisrupted) {
+          const increase = ["DC-US-E", "DC-UK"].includes(o.dc) ? LT_DELAY : 0;
+          row["Actual LT"] = (standardLtDays + increase) + "d";
+          row["Due (ETA)"] = o.due; 
+          
+          const actualEtaObj = new Date(dueObj);
+          actualEtaObj.setDate(actualEtaObj.getDate() + 15);
+          row["Actual ETA"] = fmtDate(actualEtaObj);
+          
+          row["Gap Days"] = 15;
+          row["Status"] = "Late"; 
+        } else {
+          row["Actual LT"] = standardLtDays + "d";
+          row["Due (ETA)"] = o.due; 
+          row["Gap Days"] = 0;
+          row["Status"] = "On time";
+        }
+
+        return row;
+      });
+    }
+
+    // Đã chỉnh sửa lại Trade-off table theo format của ảnh
+    function tradeoffRows() {
+      return [
+        {
+          "Mode": "<strong>Sea</strong>",
+          "Key Risks": `
+            <ul class="small-list">
+              <li>+15-day delay → risk of missing peak demand</li>
+              <li>Potential loss of sales due to late market availability</li>
+              <li>Low flexibility once shipment is in transit</li>
+            </ul>`,
+          "Actual arrival": "Delayed by 15 days",
+          "Freight Cost": `
+            +20% vs baseline
+            <ul class="small-list">
+              <li>US: USD 6,240</li>
+              <li>UK: USD 5,040</li>
+            </ul>`
+        },
+        {
+          "Mode": "<strong>Air</strong>",
+          "Key Risks": `
+            <ul class="small-list">
+              <li>Early arrival → risk of misalignment with customers' warehouse and logistics network readiness</li>
+              <li>Capacity constraints (airport / handling)</li>
+              <li>Significantly higher logistics cost</li>
+            </ul>`,
+          "Actual arrival": "Earlier than planned",
+          "Freight Cost": `
+            5.4 kg/unit
+            <ul class="small-list">
+              <li>US: USD 108,000</li>
+              <li>UK: USD 74,374</li>
+            </ul>`
+        },
+        {
+          "Mode": "<strong>Split (Sea + Air)</strong>",
+          "Key Risks": `
+            <ul class="small-list">
+              <li>Coordination complexity across modes</li>
+              <li>Risk of inventory imbalance (partial arrival)</li>
+              <li>Higher operational complexity (planning & execution)</li>
+            </ul>`,
+          "Actual arrival": "On-time",
+          "Freight Cost": "Higher than sea, lower than full air (Depends on split ratio)"
+        }
+      ];
+    }
+
+    function decisionRows() {
+      return [
+        { Rule: "R1", Name: "Delay under 1 week", Condition: "1d < LT increase <= 7d", Threshold: "Yellow", Action: "Flag yellow. Use buffer if enough, otherwise evaluate and choose alternatives"},
+        { Rule: "R2", Name: "Delay over 1 week", Condition: "LT increase > 7d", Threshold: "Red", Action: "Flag red. Evaluate and choose alternatives"},
+        { Rule: "R3", Name: "Trade-off table", Condition: "LT increase > 1d", Threshold: "Triggered", Action: "Calculate alternatives (sea, air, split) by cost, lead time, risk"},
+        { Rule: "R4", Name: "DC buffer breach", Condition: "Projected stock < 1 week demand", Threshold: "Stock ratio <1.00", Action: "Flag red. Emergency replenishment or early release"},
+        { Rule: "R5", Name: "Distributor SLA breach", Condition: "Fulfillment rate <95%", Threshold: "SLA breach", Action: "Flag red. Root cause diagnosis and corrective action"}
+      ];
+    }
+
+    function dashboardRows() {
+      const data = disrupted ? monitorDisrupted : monitorBaseline;
+      return data.map(r => {
+        const stockRatio = r.stock / r.demand;
+        const stockStatus = stockRatio < 1 ? "RED" : stockRatio < 1.2 ? "AMBER" : "GREEN";
+        const slaStatus = r.fulfillment < 0.95 ? "RED" : r.fulfillment < 0.97 ? "AMBER" : "GREEN";
+        const delayStatus = r.delay > 14 ? "RED" : r.delay > 7 ? "AMBER" : r.delay > 0 ? "YELLOW" : "GREEN";
+        return {
+          DC: r.dc,
+          Distributor: r.distributor,
+          "DC Stock vs Safety Buffer": stockRatio.toFixed(2),
+          "Fulfillment Rate": (r.fulfillment * 100).toFixed(1) + "%",
+          "Shipment Delay Days": r.delay,
+          "Stock Status": stockStatus,
+          "SLA Status": slaStatus,
+          "Delay Status": delayStatus
+        };
+      });
+    }
+
+    function alertRows() {
+      const rows = [];
+      const data = disrupted ? monitorDisrupted : monitorBaseline;
+
+      data.forEach(r => {
+        const stockRatio = r.stock / r.demand;
+        if (r.delay > 1 && r.delay <= 7) rows.push({ Alert: "A001", Rule: "R1 Delay", DC: r.dc, Value: r.delay + " days", Threshold: "1 to 7 days", Status: "YELLOW", Action: "Use buffer or evaluate alternatives" });
+        if (r.delay > 7) rows.push({ Alert: "A002", Rule: "R2 Delay", DC: r.dc, Value: r.delay + " days", Threshold: ">7 days", Status: "RED", Action: "Recalculate ETA and evaluate alternatives" });
+        if (r.delay > 1) rows.push({ Alert: "A003", Rule: "R3 Trade-off", DC: r.dc, Value: r.delay + " days", Threshold: ">1 day", Status: r.delay > 7 ? "RED" : "YELLOW", Action: "Generate sea, air, split table" });
+        if (stockRatio < 1) rows.push({ Alert: "A004", Rule: "R4 Stock", DC: r.dc, Value: stockRatio.toFixed(2), Threshold: "<1.00", Status: "RED", Action: "Emergency replenishment" });
+        if (r.fulfillment < 0.95) rows.push({ Alert: "A005", Rule: "R5 SLA", DC: r.dc, Value: (r.fulfillment * 100).toFixed(1) + "%", Threshold: "<95%", Status: "RED", Action: "Root cause diagnosis" });
+      });
+
+      return rows;
+    }
+
+    function statusBadge(value) {
+      if (value === "RED") return `<span class="badge red">RED</span>`;
+      if (value === "YELLOW") return `<span class="badge amber">YELLOW</span>`;
+      if (value === "AMBER") return `<span class="badge amber">AMBER</span>`;
+      if (value === "GREEN") return `<span class="badge green">GREEN</span>`;
+      if (value === "Late") return `<span class="badge red">Late</span>`;
+      if (value === "On time") return `<span class="badge green">On time</span>`;
+      if (value === "Critical") return `<span class="badge red">Critical</span>`;
+      if (value === "High") return `<span class="badge amber">High</span>`;
+      if (value === "Medium") return `<span class="badge blue">Medium</span>`;
+      return value;
+    }
+
+    function table(rows) {
+      if (!rows.length) return "<p class='muted'>No data</p>";
+      const cols = Object.keys(rows[0]);
+      const head = cols.map(c => `<th>${c}</th>`).join("");
+      const body = rows.map(r => `<tr>${cols.map(c => `<td>${statusBadge(r[c])}</td>`).join("")}</tr>`).join("");
+      return `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
+    }
+
+    function renderAlerts() {
+      const alerts = alertRows();
+      const box = document.getElementById("alertList");
+      box.innerHTML = alerts.length
+        ? alerts.map(a => `<div class="alert ${a.Status === "RED" ? "red-alert" : "yellow-alert"}">${a.DC}: ${a.Rule} triggered.</div>`).join("")
+        : "<p class='muted'>No alerts under baseline mode.</p>";
+    }
+
+    function renderMetrics() {
+      const rows = dashboardRows();
+      document.getElementById("stockBreachCount").textContent = rows.filter(r => r["Stock Status"] === "RED").length;
+      document.getElementById("slaBreachCount").textContent = rows.filter(r => r["SLA Status"] === "RED").length;
+      document.getElementById("delayBreachCount").textContent = rows.filter(r => r["Delay Status"] === "RED").length;
+    }
+
+    function render() {
+      document.getElementById("scenarioStatus").textContent = disrupted ? "Disruption active: +15d LT, +20% ocean cost" : "Baseline mode";
+      document.getElementById("scenarioStatus").className = disrupted ? "pill active" : "pill";
+      document.getElementById("decisionTable").innerHTML = table(decisionRows());
+      document.getElementById("beforeTable").innerHTML = table(evaluateOrders(false));
+      document.getElementById("afterTable").innerHTML = table(evaluateOrders(disrupted));
+      document.getElementById("tradeoffTable").innerHTML = table(tradeoffRows());
+      document.getElementById("dashboardTable").innerHTML = table(dashboardRows());
+      document.getElementById("alertsTable").innerHTML = table(alertRows());
+      renderAlerts();
+      renderMetrics();
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).classList.add("active");
+      });
+    });
+
+    document.getElementById("applyScenario").addEventListener("click", () => { disrupted = true; render(); });
+    document.getElementById("resetScenario").addEventListener("click", () => { disrupted = false; render(); });
+
+    render();
+  </script>
+</body>
+</html>
